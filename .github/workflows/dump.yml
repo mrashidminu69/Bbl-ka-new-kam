@@ -1,0 +1,57 @@
+name: Il2CppDumper
+
+on:
+  workflow_dispatch:
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check files
+        run: |
+          echo "=== Files in root ==="
+          ls -lh
+          echo "=== Looking for libil2cpp.so ==="
+          find . -name "libil2cpp.so"
+          echo "=== Looking for global-metadata.dat ==="
+          find . -name "global-metadata.dat"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Download Il2CppDumper
+        run: |
+          wget https://github.com/Perfare/Il2CppDumper/releases/download/v6.7.40/Il2CppDumper-net6-v6.7.40.zip
+          unzip Il2CppDumper-net6-v6.7.40.zip -d Il2CppDumper
+          chmod +x Il2CppDumper/Il2CppDumper
+          ls -la Il2CppDumper/
+
+      - name: Run Il2CppDumper
+        run: |
+          mkdir -p output
+          cd Il2CppDumper
+          ./Il2CppDumper ../libil2cpp.so ../global-metadata.dat ../output/
+          echo "=== Output files ==="
+          ls -lh ../output/
+
+      - name: Show Output
+        run: |
+          echo "=== dump.cs ==="
+          ls -lh output/dump.cs || echo "dump.cs NOT found"
+          echo "=== script.json ==="
+          ls -lh output/script.json || echo "script.json NOT found"
+          echo "=== All files ==="
+          ls -lh output/
+
+      - name: Upload Dump
+        uses: actions/upload-artifact@v4
+        with:
+          name: il2cpp-dump
+          path: output/
+          if-no-files-found: warn
