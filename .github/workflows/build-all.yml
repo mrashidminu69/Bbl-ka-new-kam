@@ -1,0 +1,61 @@
+name: Patch OBB Files
+
+on:
+  workflow_dispatch:
+    inputs:
+      obb_url:
+        description: 'OBB File ka Google Drive Download Link'
+        required: true
+      texts_url:
+        description: '10 Text Files wali ZIP ka Google Drive Link'
+        required: true
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          pip install UnityPy pillow gdown
+      
+      - name: Download OBB file from Google Drive
+        run: |
+          gdown "${{ github.event.inputs.obb_url }}" -O game.obb
+          ls -lh game.obb
+      
+      - name: Download Text Files ZIP from Google Drive
+        run: |
+          gdown "${{ github.event.inputs.texts_url }}" -O texts.zip
+          ls -lh texts.zip
+          mkdir -p new_texts
+          unzip -o texts.zip -d new_texts
+          echo "=== Files in new_texts ==="
+          ls -la new_texts/
+      
+      - name: Run Patch Script
+        run: |
+          mkdir -p out
+          python patch_apk.py game.obb new_texts
+      
+      - name: Show Patched Files
+        if: always()
+        run: |
+          echo "=== Patched files in out/ ==="
+          ls -la out/
+      
+      - name: Upload Patched Files (Only 10 Files)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: patched-files
+          path: out/
+          if-no-files-found: error
