@@ -25,14 +25,14 @@ jobs:
         run: |
           wget https://github.com/Perfare/Il2CppDumper/releases/download/v6.7.40/Il2CppDumper-net6-v6.7.40.zip
           unzip Il2CppDumper-net6-v6.7.40.zip -d Il2CppDumper
-          chmod +x Il2CppDumper/Il2CppDumper
+          echo "=== Files in Il2CppDumper ==="
           ls -la Il2CppDumper/
 
       - name: Run Il2CppDumper
         run: |
           mkdir -p output
           cd Il2CppDumper
-          ./Il2CppDumper ../libil2cpp.so ../global-metadata.dat ../output/
+          dotnet Il2CppDumper.dll ../libil2cpp.so ../global-metadata.dat ../output/
           echo "=== Output files ==="
           ls -lh ../output/
 
