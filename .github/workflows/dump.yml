@@ -11,14 +11,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Check files
+      - name: Unzip libil2cpp
         run: |
-          echo "=== Files in root ==="
-          ls -lh
-          echo "=== Looking for libil2cpp.so ==="
-          find . -name "libil2cpp.so"
-          echo "=== Looking for global-metadata.dat ==="
-          find . -name "global-metadata.dat"
+          unzip libil2cpp.zip
+          ls -lh libil2cpp.so
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -46,8 +42,6 @@ jobs:
           ls -lh output/dump.cs || echo "dump.cs NOT found"
           echo "=== script.json ==="
           ls -lh output/script.json || echo "script.json NOT found"
-          echo "=== All files ==="
-          ls -lh output/
 
       - name: Upload Dump
         uses: actions/upload-artifact@v4
