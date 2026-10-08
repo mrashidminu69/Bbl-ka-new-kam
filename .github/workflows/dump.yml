@@ -32,7 +32,8 @@ jobs:
         run: |
           mkdir -p output
           cd Il2CppDumper
-          dotnet Il2CppDumper.dll ../libil2cpp.so ../global-metadata.dat ../output/
+          # "yes" bhej kar "Press any key" ko bypass karein
+          yes "" | dotnet Il2CppDumper.dll ../libil2cpp.so ../global-metadata.dat ../output/ || true
           echo "=== Output files ==="
           ls -lh ../output/
 
